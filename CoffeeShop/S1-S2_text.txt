@@ -1,0 +1,210 @@
+--- PAGE 1 ---
+WEB DEVELOPMENT 1 
+ 
+ 
+ 
+BUILDING A WEBSITE COFFEE SHOP 
+USING ASP.NET CORE 
+  
+--- PAGE 2 ---
+Contents 
+Section 1: Overview about creating a .Net Core project ............................................................................. 5 
+1. Create a new .NET CORE project ........................................................................................................ 5 
+2. Structure of project web ....................................................................................................................... 6 
+3. Introduction about MVC pattern ......................................................................................................... 8 
+4. Create Model classes ............................................................................................................................. 9 
+5. Repository Pattern .................................................................................................................................. 9 
+6. Implement Repository pattern ........................................................................................................... 10 
+7. Registering Services in IOC Container .............................................................................................. 11 
+8. Create a Controller .NET MVC ............................................................................................................ 12 
+9. Create a View .Net MVC ...................................................................................................................... 13 
+10. Pass data to View .Net MVC ........................................................................................................... 14 
+Section 2: Connect Entity Framework Core and MSSQL .......................................................................... 15 
+1. Install EF Core and MSSQL .................................................................................................................. 15 
+2. Create a connection DbContext và DbSet ..................................................................................... 16 
+3. Create Database Connection String ................................................................................................ 17 
+4. Edit Repository Class ............................................................................................................................ 18 
+5. Implement Migration trong .NET Core ............................................................................................. 18 
+6. Create Seed data (dữ liệu mẫu) ........................................................................................................ 20 
+Section 3: APS.Net Core development: Routing, navigations, Layout và Render Body ..................... 22 
+1. Routing ..................................................................................................................................................... 22 
+2. Product Detail ......................................................................................................................................... 22 
+3. Navigations with Tag Helpers ............................................................................................................. 22 
+4. Render Body, View Imports, View Start & Layout File ................................................................... 23 
+Section 4: Template integation in Asp.net Core ......................................................................................... 26 
+1. What is tempate? How to get templates? ...................................................................................... 26 
+2. Understanding about template ......................................................................................................... 26 
+3. Intergrate template in .Net Core ....................................................................................................... 27 
+4. Populate Trending Products data ...................................................................................................... 32 
+5. Intergrate Shop Page ........................................................................................................................... 34 
+6. Intergrate Page detail .......................................................................................................................... 38 
+7. Partial View trong .NET Core .............................................................................................................. 39 
+Section 5: ASP.Net core shopping cart ......................................................................................................... 42 
+1. Create Shopping cart model classes ............................................................................................... 42 
+--- PAGE 3 ---
+2. Working with Session và Shopping Cart methods ....................................................................... 44 
+3. Shopping Cart Controller ................................................................................................................... 47 
+4. Add Shopping Cart View .................................................................................................................... 48 
+5. Display Data trong Shopping Cart View.......................................................................................... 52 
+6. Display Total Price in Shopping Cart ................................................................................................ 54 
+7. Remove Shopping Cart data .............................................................................................................. 54 
+8. Empty Shopping Cart View ................................................................................................................ 54 
+9. Cart Couter ............................................................................................................................................ 55 
+Section  6: Create form Order with ASP.NET Core .................................................................................... 58 
+1. Create Order Model Classes ............................................................................................................. 58 
+2. Create Order Repository .................................................................................................................... 58 
+3. Implement Migrations the Order table ........................................................................................... 59 
+4. Create Orders Controller ................................................................................................................... 59 
+5. Create Order View ............................................................................................................................... 60 
+6. Model Blinding và place Order ........................................................................................................... 61 
+Section 7: Authentication in ASP.NET Core ................................................................................................. 66 
+1. Add ASP.NET Identity ........................................................................................................................... 66 
+2. Add Authentication .............................................................................................................................. 68 
+3. Modify Register và Login ..................................................................................................................... 72 
+4. Add Authorization ................................................................................................................................ 75 
+Section 8: Deploying ASP.Net Core App on Azure .................................................................................... 79 
+ 
+  
+--- PAGE 4 ---
+Lab content: 
+ Develop a web app in .NET Core using Entity Framework Code First Approach 
+ Use advanced features such as Dependency Injection and Repository Pattern 
+ Implement Routing and Navigation Tag Helpers 
+ Learn how to use Render Body, View Imports, View Start & _Layout File 
+ Add Migrations in Web Application 
+ Integrate Custom Theme or Template in Asp .NET Core Web Application 
+ Create a Shopping Cart for your application 
+ Implement Session Management 
+ Learn how to implement Authentication and Authorization with Identity 
+ Create a Coffee Shop ECommerce Web App From Scratch 
+Software: 
+ Visual Studio 2022 
+ Micosoft SQL Server 2022 + SQL Server Managerment Studio (SSMS) 
+ Enable IIS ( Internet Information Services) (Optional) 
+ 
+ 
+  
+--- PAGE 5 ---
+Section 1: Overview about creating a .Net Core project 1. Create a new .NET CORE project  
+ 
+ 
+
+--- PAGE 6 ---
+ 2. Structure of project web  
+ 
+
+--- PAGE 7 ---
+  
+ 
+
+--- PAGE 8 ---
+ 3. Introduction about MVC pattern MVC is stand for Model-View-Controller Là kiểu mô hình kiến trúc sử dụng trong phát triển web để chia ứng dụng thành 3 thành phần: Model, View, Controller Model; đại diện cho phần logic liên quan đến dữ liệu mà người dùng tương tác  Ví dụ: Model có các class như: Product, Order, …  Lớp Model độc lập với View và chứa thuộc tính và phương thức liên quan đến data View: đại diện cho phần giao diện người dùng như HTML CSS  Hiển thị dữ liệu trả từ Controller khi User tương tác. Controller:  Chịu trách nhiệm cho phần xử lý các HTTP request  Hành động như là cầu nối giữa Model và View  Thực thi business logic và các request và gửi kết quả đến View.  
+
+--- PAGE 9 ---
+4. Create Model classes 
+ 5. Repository Pattern The RP separates business logic from data access logic, promoting a loose couple between the two layers. This makes it easier to maintain and test the application. Benefit:  Abstraction layer promptes loose coupling  Easier maintenance and testing  Flexibility in data storage and retrieval Repository Interface  Play a crucial role in specifying the capabilities repository.  It outlines the operations (methods) supported, along with the data needed for each operation.  The interface defines the parameters and data that the method returns. public interface IProductRepository {  List<Product> GetProdcuts() {  //get products form the database } } Controller Class and Loose Coupling  The Controller class calls the methods of the Repository Interface instead of directly accessing the database.  This achieves loose coupling of the code Public class ProductController {  IProductRepository productRepository;  productController(IProductRepository productRepository) {   this.productRepository = productRepository; 
+
+--- PAGE 10 ---
+} public IActionResult Get() {   productRepository.GetProduct(); } } Registering Interfaces and Repository Classes  Interfaces and repository classes are registered in the Program.cs class  ASP.NET Core Application comes with a build-in Dependency Injection container, which provides instances of Repository Classes when an instance of the interface is requested. Builder.Services.AddScopped<IProductRepository , ProductRepository>(); 6.  Implement Repository pattern 
+ Create interface IProductRepository.cs in folder Interfaces namespace coffeeshop.Models.interfaces {     public interface IProductRepository     {         IEnumerable<Product> GetAllProducts();         IEnumerable<Product> GetTrendingProducts();         Product GetProductDetail(int id);     } } Create class ProductRepository.cs in folder Services using coffeeshop.Models.interfaces; namespace coffeeshop.Models.Services {     public class ProductRepository : IProductRepository     { 
+
+--- PAGE 11 ---
+        //ở đây ta tạo mảng dữ liệu để truy xuất vì chưa có database để lấy dữ liệu         private List<Product> ProductsList = new List<Product>()         {             new Product{ Id = 1, Name = "America", Price= 25, Detail="Name product", ImageUrl="https://index.com"},             new Product{ Id = 2, Name = "Vietnam", Price= 20, Detail="Vietnamese product", ImageUrl="https://index.com"},             new Product{ Id = 3, Name = "United Kingdom", Price= 15, Detail="Name product", ImageUrl="https://index.com"}         };          public IEnumerable<Product> GetAllProducts()         {             return ProductsList;         }          public Product GetProductDetail(int id)         {             return ProductsList.FirstOrDefault(p => p.Id == id);         }          public IEnumerable<Product> GetTrendingProducts()         {             return ProductsList.Where(p => p.IsTrendingProduct);         }     } } 7. Registering Services in IOC Container 
+ In file Program.cs, we add a line code below to declare Service DI Builder.Services.AddScopped<IProductRepository , ProductRepository>(); 
+
+--- PAGE 12 ---
+ 8. Create a Controller .NET MVC 
+ Create a folder named Controllers Then we create a controller with name ProductsController.cs 
+
+--- PAGE 13 ---
+ 9.  Create a View .Net MVC 
+  Create a folder Views  Create a folder name Products  Create a View name Shop.cshtml Add source code -  Shop.cshtml <!DOCTYPE html> <html>     <head>         <title>Coffee Shop</title>     </head>     <body>         <h1>Shop Coffee</h1>      </body> </html> 
+
+--- PAGE 14 ---
+10.  Pass data to View .Net MVC 
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <title>Coffee Shop</title> 
+    </head> 
+    <body> 
+        <h1>Shop Coffee</h1> 
+        @foreach (var item in Model) 
+        { 
+            <img width="100" src="@item.ImageUrl" /> 
+            <h3>@item.Name</h3> 
+            <p>@item.Price.ToString("C")</p> 
+        } 
+    </body> 
+</html> 
+ 
+  
+--- PAGE 15 ---
+Section 2: Connect Entity Framework Core and MSSQL 1. Install EF Core and MSSQL EF Core is an open-source object-relational mapping (ORM) framework for the .NET platform. EF Core is: + A software library for developers + Provides simple and efficient interaction with databases + Enables work with databases using programming language of choice + Object-oriented model instead of raw SQL commands + Support multiple database providers( SQL Server, MySQL, SQLite…) Install EF Core 
+  Search > install Microsoft.EntityFrameworkCore Search > install Microsoft.EntityFrameworkCore.SqlServer Search > install Microsoft.EntityFrameworkCore.Tools  
+
+--- PAGE 16 ---
+ 2.  Create a connection DbContext và DbSet Code First Approach EF will create database table based on model classes.  DbContext  Like as gateway connect to database  In DbContext class, one or more than one property DbSet can be defined.  The property DbSet represents the name of table in database.  
+
+--- PAGE 17 ---
+ Create folder Data, then add a file CoffeeshopDbContext.cs 
+ using coffeeshop.Models; using Microsoft.EntityFrameworkCore; namespace coffeeshop.Data {     public class CoffeeshopDbContext:DbContext     {         public CoffeeshopDbContext(DbContextOptions<CoffeeshopDbContext>options) : base(options)         {         }         public DbSet<Product> Products { get; set; }     } } 3. Create Database Connection String We open file appsettings.json then change the information Server name and database name of SQL Server Managerment Studio that install in your computer. {   "Logging": {     "LogLevel": {       "Default": "Information",       "Microsoft.AspNetCore": "Warning" 
+
+--- PAGE 18 ---
+    } 
+  }, 
+  "AllowedHosts": "*", 
+  "ConnectionStrings": { 
+    "CoffeeShopDbContextConnection": "Server=YourServername; Database=DatabaseName; 
+Integrated Security=True; Pooling=False; TrustServerCertificate=True;", 
+  } 
+} 
+Open Program.cs, add code 
+builder.Services.AddDbContext<CoffeeshopDbContext>(option => 
+option.UseSqlServer(builder.Configuration.GetConnectionString("CoffeeShopDbContextConnection"))); 
+4. Edit Repository Class 
+Open ProductRepository.cs 
+using coffeeshop.Data; 
+using coffeeshop.Models.interfaces; 
+ 
+namespace coffeeshop.Models.Services 
+{ 
+    public class ProductRepository : IProductRepository 
+    { 
+        private CoffeeshopDbContext dbContext; 
+        public ProductRepository(CoffeeshopDbContext dbContext) 
+        { 
+            this.dbContext = dbContext; 
+        } 
+ 
+        public IEnumerable<Product> GetAllProducts() 
+        { 
+            return dbContext.Products; 
+        } 
+ 
+        public Product? GetProductDetail(int id) 
+        { 
+            return dbContext.Products.FirstOrDefault(p => p.Id == id); 
+        } 
+ 
+        public IEnumerable<Product> GetTrendingProducts() 
+        { 
+            return dbContext.Products.Where(p => p.IsTrendingProduct); 
+        } 
+    } 
+} 
+ 
+5. Implement Migration trong .NET Core 
+Open Package Manager Console 
+Add Migration CLI: add-migration FirstCreate 
+--- PAGE 19 ---
+ Update Database: CLI: update-database 
+ Check result in MS SQL Server 
+
+--- PAGE 20 ---
+ 6. Create Seed data (dữ liệu mẫu) Open CoffeeshopDbContext.cs and add code //seed data         protected override void OnModelCreating(ModelBuilder modelBuilder)         {             base.OnModelCreating(modelBuilder);             modelBuilder.Entity<Product>().HasData(                 new Product { Id = 1, Name = "America", Price = 25, Detail = "Name product", ImageUrl = "https://insanelygoodrecipes.com/wp-content/uploads/2020/07/Cup-Of-Creamy-Coffee-1024x536.webp" },                 new Product { Id = 2, Name = "Vietnam", Price = 20, Detail = "Vietnamese product", ImageUrl = "https://insanelygoodrecipes.com/wp-content/uploads/2020/07/Cup-Of-Creamy-Coffee-1024x536.webp" },                 new Product { Id = 3, Name = "United Kingdom", Price = 15, Detail = "UK product", ImageUrl = "https://insanelygoodrecipes.com/wp-content/uploads/2020/07/Cup-Of-Creamy-Coffee-1024x536.webp" },                  new Product { Id = 4, Name = "India", Price = 15, Detail = "India product", ImageUrl = "https://insanelygoodrecipes.com/wp-content/uploads/2020/07/Cup-Of-Creamy-Coffee-1024x536.webp" },                   new Product { Id = 5, Name = "Russian", Price = 25, Detail = "Russian product", ImageUrl = "https://insanelygoodrecipes.com/wp-content/uploads/2020/07/Cup-Of-Creamy-Coffee-1024x536.webp" },                    new Product { Id = 6, Name = "France", Price = 35, Detail = "France product", ImageUrl = "https://insanelygoodrecipes.com/wp-content/uploads/2020/07/Cup-Of-Creamy-Coffee-1024x536.webp" }                 );         } Open Package Manager Console  PM> add-migration seeddata PM> update-database Show result after updating database 
+
+--- PAGE 21 ---
+ 
+ Show Result in Browser    
+
