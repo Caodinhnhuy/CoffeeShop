@@ -1,8 +1,33 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+@model IEnumerable<CoffeeShop.Models.Product>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section data-bs-version="5.1" class="header18 cid-tsEQyIZRcx mbr-fullscreen mbr-parallax-background" id="header18-1">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-md-12 col-lg-12">
+                <h1 class="mbr-section-title mbr-fonts-style mb-3 display-1 text-center"><strong>The daily grind coffee house</strong></h1>
+                <p class="mbr-text mbr-fonts-style mb-4 display-7 text-center">Where every cup is a fresh brew of perfection</p>
+                <div class="mbr-section-btn mt-3 text-center">
+                    <a class="btn btn-primary display-4" asp-controller="Products" asp-action="Shop">
+                        <span class="mobi-mbri mobi-mbri-shopping-bag mbr-iconfont mbr-iconfont-btn"></span>Shop now&nbsp;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section data-bs-version="5.1" class="features3" id="features3-2">
+    <div class="container">
+        <div class="mbr-section-head">
+            <h4 class="mbr-section-title mbr-fonts-style align-center mb-0 display-2">
+                <strong>Top Selling</strong>
+            </h4>
+            <h5 class="mbr-section-subtitle mbr-fonts-style align-center mb-0 mt-2 display-5">
+                Make your mornings<br>better with our top-selling product.
+            </h5>
+        </div>
+        <div class="row mt-4">
+            <partial name="_Product" />
+        </div>
+    </div>
+</section>
